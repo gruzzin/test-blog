@@ -18,12 +18,9 @@ class Post(object):
                 'body': self.body}
 
     def save(self):
-        try:
-            posts = Post.load()
-        except:
-            posts = {}
+        posts = Post.load()
+        if not len(posts):
             self.postid = 1
-
         if posts.get(self.postid):
             posts[self.postid] = self.to_dict()
         elif not self.postid:
@@ -37,8 +34,9 @@ class Post(object):
         try:
             with open(filename) as f:
                 posts = json.load(f)
-        except:
-            print('File not found, {}'.format(filename))
+        except FileNotFoundError:
+            print('File not found: {}'.format(filename))
+            return {}
         if postid:
             return {int(k): posts[k] for k in posts.keys() if int(k) in postid}
         else:

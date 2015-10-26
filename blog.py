@@ -6,24 +6,27 @@ from collections import OrderedDict
 from post import Post
 
 
+def order_by_date(posts):
+    return OrderedDict(
+        sorted(posts.items(),
+               key=lambda x: datetime.strptime(
+                    x[1]['date'], '%Y-%m-%d %H:%M:%S'),
+               reverse=True))
+
+
 def post_table(posts, ordered=None):
     print('{0:3s} | {1:<20s} | {2:<19s} | {3}'
           .format('ID', 'Title', 'Date modified', 'Body'))
     print('-' * 80)
     if ordered == 'date':
-        posts = OrderedDict(
-            sorted(posts.items(),
-                   key=lambda x: datetime.strptime(
-                        x[1]['date'], '%Y-%m-%d %H:%M:%S'),
-                   reverse=True
-                   ))
+        posts = order_by_date(posts)
     for postid in posts.keys():
         print('{0:3d} | {1:20s} | {2:19s} | {3}'
               .format(postid,
-                      posts[postid]['title'][:20],  # truncate title
+                      posts[postid]['title'][:20],
                       posts[postid]['date'],
                       posts[postid]['body'])
-              [:80])                                # truncate whole thing
+              [:80])
 
 
 def list_posts(args):
@@ -95,12 +98,7 @@ def print_post(args):
         print('Post ID(s) not found: {}'.format(' '.join(args.postid)))
         return
     if args.s:
-        posts = OrderedDict(
-            sorted(posts.items(),
-                   key=lambda x: datetime.strptime(
-                        x[1]['date'], '%Y-%m-%d %H:%M:%S'),
-                   reverse=True
-                   ))
+        posts = order_by_date(posts)
     for postid in posts.keys():
         if len(posts[postid]['body']) > 74:
             body = '\n      '.join(trunc(posts[postid]['body'], 74))
@@ -153,6 +151,7 @@ if __name__ == '__main__':
     d_post.set_defaults(func=del_post)
 
     args = parser.parse_args()
+
     try:
         args.func(args)
     except AttributeError:
