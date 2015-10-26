@@ -92,7 +92,6 @@ def print_post(args):
         except ValueError:
             print('Post IDs should be numbers')
             return
-        print(ids)
         posts = Post.load(ids)
     if not len(posts):
         print('Post ID(s) not found: {}'.format(' '.join(args.postid)))
